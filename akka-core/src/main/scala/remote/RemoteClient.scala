@@ -70,6 +70,7 @@ class RemoteClientException private[akka](message: String, @BeanProperty val cli
 object RemoteClient extends Logging {
   val READ_TIMEOUT =    Duration(config.getInt("akka.remote.client.read-timeout", 1), TIME_UNIT)
   val RECONNECT_DELAY = Duration(config.getInt("akka.remote.client.reconnect-delay", 5), TIME_UNIT)
+  val MESSAGE_FRAME_SIZE = config.getInt("akka.remote.client.message-frame-size", 1048576)
 
   private val remoteClients = new HashMap[String, RemoteClient]
   private val remoteActors =  new HashMap[RemoteServer.Address, HashSet[String]]
@@ -311,7 +312,7 @@ class RemoteClientPipelineFactory(
 
     val ssl         = if (RemoteServer.SECURE) join(new SslHandler(engine)) else join()
     val timeout     = new ReadTimeoutHandler(timer, RemoteClient.READ_TIMEOUT.toMillis.toInt)
-    val lenDec      = new LengthFieldBasedFrameDecoder(1048576, 0, 4, 0, 4)
+    val lenDec      = new LengthFieldBasedFrameDecoder(RemoteClient.MESSAGE_FRAME_SIZE, 0, 4, 0, 4)
     val lenPrep     = new LengthFieldPrepender(4)
     val protobufDec = new ProtobufDecoder(RemoteReplyProtocol.getDefaultInstance)
     val protobufEnc = new ProtobufEncoder
