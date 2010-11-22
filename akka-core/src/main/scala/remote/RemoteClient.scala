@@ -400,7 +400,7 @@ class RemoteClientHandler(
           }
         }
       }, RemoteClient.RECONNECT_DELAY.toMillis, TimeUnit.MILLISECONDS)
-    } else client.shutdown
+    } else Actor.spawn { client.shutdown }
   }
 
   override def channelConnected(ctx: ChannelHandlerContext, event: ChannelStateEvent) = {
