@@ -354,7 +354,7 @@ class RemoteClientHandler(
       val result = event.getMessage
       if (result.isInstanceOf[RemoteReplyProtocol]) {
         val reply = result.asInstanceOf[RemoteReplyProtocol]
-        log.debug("Remote client received RemoteReplyProtocol[\n%s]", reply.toString)
+        log.debug("Remote client received RemoteReplyProtocol[\n" + reply.toString + "]")
         val future = futures.get(reply.getId).asInstanceOf[CompletableFuture[Any]]
         if (reply.getIsSuccessful) {
           val message = MessageSerializer.deserialize(reply.getMessage)
