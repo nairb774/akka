@@ -442,7 +442,7 @@ class RemoteServerHandler(
   }
 
   private def handleRemoteRequestProtocol(request: RemoteRequestProtocol, channel: Channel) = {
-    log.debug("Received RemoteRequestProtocol[\n%s]", request.toString)
+    log.debug("Received RemoteRequestProtocol[\n" + request.toString + "]")
     val actorType = request.getActorInfo.getActorType
     if (actorType == ActorType.SCALA_ACTOR) dispatchToActor(request, channel)
     else if (actorType == ActorType.JAVA_ACTOR)  throw new IllegalActorStateException("ActorType JAVA_ACTOR is currently not supported")
