@@ -64,6 +64,7 @@ object RemoteNode extends RemoteServer
 object RemoteServer {
   val HOSTNAME = config.getString("akka.remote.server.hostname", "localhost")
   val PORT = config.getInt("akka.remote.server.port", 9999)
+  val MESSAGE_FRAME_SIZE = config.getInt("akka.remote.server.message-frame-size", 1048576)
 
   val CONNECTION_TIMEOUT_MILLIS = Duration(config.getInt("akka.remote.server.connection-timeout", 1), TIME_UNIT)
 
@@ -360,7 +361,7 @@ class RemoteServerPipelineFactory(
     }
 
     val ssl         = if(RemoteServer.SECURE) join(new SslHandler(engine)) else join()
-    val lenDec      = new LengthFieldBasedFrameDecoder(1048576, 0, 4, 0, 4)
+    val lenDec      = new LengthFieldBasedFrameDecoder(RemoteServer.MESSAGE_FRAME_SIZE, 0, 4, 0, 4)
     val lenPrep     = new LengthFieldPrepender(4)
     val protobufDec = new ProtobufDecoder(RemoteRequestProtocol.getDefaultInstance)
     val protobufEnc = new ProtobufEncoder
