@@ -537,18 +537,11 @@ class RemoteServerHandler(
     val actorRefOrNull = actors get uuid
 
     if (actorRefOrNull eq null) {
-      try {
-        log.info("Creating a new remote actor [%s:%s]", name, uuid)
-        val clazz = if (applicationLoader.isDefined) applicationLoader.get.loadClass(name)
-                    else Class.forName(name)
-        val actorRef = Actor.actorOf(clazz.newInstance.asInstanceOf[Actor])
-        actorRef.uuid = uuid
-        actorRef.timeout = timeout
-        actorRef.remoteAddress = None
-        actors.put(uuid, actorRef)
-        actorRef
-      } catch {
-        case e =>
+      val actorRefOption: Option[ActorRef] = ActorRegistry.actorFor(uuid)
+      actorRefOption match {
+        case Some(actorRef) => actorRef
+        case None =>
+          val e = new IllegalStateException("Actor [" + name + ":" + uuid + "] could not be found.")
           log.error(e, "Could not create remote actor instance")
           server.foreachListener(_ ! RemoteServerError(e, server))
           throw e
