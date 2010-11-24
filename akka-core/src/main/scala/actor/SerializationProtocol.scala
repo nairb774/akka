@@ -211,8 +211,6 @@ object RemoteActorSerialization {
 
     if (!registeredInRemoteNodeDuringSerialization) {
       Actor.log.debug("Register serialized Actor [%s] as remote @ [%s:%s]", actorClass.getName, host, port)
-      RemoteServer.getOrCreateServer(homeAddress)
-      RemoteServer.registerActor(homeAddress, uuid, ar)
       registeredInRemoteNodeDuringSerialization = true
     }
 
@@ -245,7 +243,6 @@ object RemoteActorSerialization {
     if (id.isDefined) request.setSupervisorUuid(id.get)
 
     senderOption.foreach { sender =>
-      RemoteServer.getOrCreateServer(sender.homeAddress).register(sender.uuid, sender)
       request.setSender(toRemoteActorRefProtocol(sender))
     }
     request
